@@ -534,6 +534,7 @@ function keyReleased() {
   }
   if (keyCode == 80) {
     start();
+    socket.emit('clean');
   }
 }
 

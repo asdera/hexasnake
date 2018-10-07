@@ -24,11 +24,13 @@ function onConnection(socket) {
   socket.on('grid', () => socket.emit('grid', grid));
   socket.on('disconnect', function() {
     console.log("Player disconnected");
+    cleanGrid();
     if (--numUsers == 0) {
       console.log("Game reset!");
       createGrid();
     }
   });
+  socket.on('clean', cleanGrid);
 }
 
 io.on('connection', onConnection);
@@ -71,6 +73,17 @@ function Hex(i, j, type) {
   this.space = type;
   this.i = i;
   this.j = j;
+}
+
+function cleanGrid() {
+  for (var i = 0; i < gridSize*2+1; i++) {
+    for (var j = 0; j < gridSize*2+1; j++) {
+      if ([5/*"head"*/, 6/*"snake"*/, 7/*"tail"*/].includes(grid[i][j].space)) {
+        grid[i][j].space = 2/*"empty"*/;
+      }  
+    }
+  }
+  io.emit('grid', grid);
 }
 
 function createGrid() {
